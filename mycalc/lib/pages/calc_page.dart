@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
-import 'package:mycalc/colors.dart';
-
 
 class CalculatorApp extends StatefulWidget {
-  const CalculatorApp({super.key});
+  final Color dullColor;
+  final Color operatorColor;
+  final Color textColor;
+  final Color bgColor;
+  const CalculatorApp({
+    Key? key,
+    required this.textColor,
+    required this.operatorColor,
+    required this.dullColor,
+    required this.bgColor,
+  }) : super(key: key);
 
   @override
   State<CalculatorApp> createState() => _CalculatorAppState();
@@ -15,14 +23,16 @@ class _CalculatorAppState extends State<CalculatorApp> {
   var output = "";
   var operation = "";
   var hideInput = false;
+  var isDegree = false;
+  var isTrigo = true;
+  List<String> historyArray = [""];
+  double toDegree = 3.14159265358979323846 / 180;
+
   double outputSize = 34;
   double outputOpacity = 0.7;
   double btnTextSize = 29;
   double btnPadding = 15;
   double btnMargin = 8;
-  double toDegree = 3.14159265358979323846 / 180;
-  var isDegree = false;
-  var isTrigo = true;
 
   var openScientific = false;
 
@@ -69,6 +79,7 @@ class _CalculatorAppState extends State<CalculatorApp> {
   }
 
   onClick(value) {
+    var tempUserInput = "";
     if (value == "AC") {
       input = "";
       output = "";
@@ -96,6 +107,9 @@ class _CalculatorAppState extends State<CalculatorApp> {
         if (!isBracketBalanced(userInput)) {
           userInput = completeBrackets(userInput);
         }
+
+        tempUserInput = userInput;
+
         Parser p = Parser();
         Expression expression = p.parse(userInput);
         ContextModel cm = ContextModel();
@@ -105,6 +119,8 @@ class _CalculatorAppState extends State<CalculatorApp> {
         if (output.endsWith(".0")) {
           output = output.substring(0, output.length - 2);
         }
+        tempUserInput = tempUserInput + " = " + output;
+        historyArray.add(tempUserInput);
         input = output;
         hideInput = true;
         outputSize = 52;
@@ -184,124 +200,263 @@ class _CalculatorAppState extends State<CalculatorApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: widget.bgColor,
       body: Column(
         children: [
           Expanded(
-              child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  hideInput ? "" : input,
-                  style: const TextStyle(fontSize: 48, color: textColor),
+              child: ListView.builder(
+            itemCount: historyArray.length - 1,
+            itemBuilder: (context, index) {
+              return Card(
+                child: ListTile(
+                  title: Text(historyArray[index + 1]),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  output,
-                  style: TextStyle(
-                    fontSize: outputSize,
-                    color: textColor.withOpacity(outputOpacity),
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           )),
+          inputOutput(),
+          keyboard(),
+        ],
+      ),
+    );
+  }
 
-          //Button Area
-
-          openScientific
-              ? Row(children: [
-                  button(text: "2nd", textColor: dullColor),
-                  isDegree
-                      ? button(text: "deg", textColor: dullColor)
-                      : button(text: "rad", textColor: dullColor),
-                  isTrigo
-                      ? button(text: "sin", textColor: dullColor)
-                      : button(text: "asin", textColor: dullColor),
-                  isTrigo
-                      ? button(text: "cos", textColor: dullColor)
-                      : button(text: "acos", textColor: dullColor),
-                  isTrigo
-                      ? button(text: "tan", textColor: dullColor)
-                      : button(text: "atan", textColor: dullColor),
-                ])
-              : Container(),
-          openScientific
-              ? Row(
-                  children: [
-                    button(text: "x^y", textColor: dullColor),
-                    button(text: "log", textColor: dullColor),
-                    button(text: "ln", textColor: dullColor),
-                    button(text: "(", textColor: dullColor),
-                    button(text: ")", textColor: dullColor),
-                  ],
-                )
-              : Container(),
-          Row(
-            children: [
-              openScientific
-                  ? button(text: "√x", textColor: dullColor)
-                  : Container(),
-              button(text: "AC", textColor: operatorColor),
-              button(text: "back", textColor: operatorColor),
-              button(text: "rem", textColor: operatorColor),
-              button(text: "÷", textColor: operatorColor),
-            ],
+  Widget inputOutput() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
+      width: double.infinity,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            hideInput ? "" : input,
+            style: TextStyle(fontSize: 48, color: widget.textColor),
           ),
-          Row(
-            children: [
-              openScientific
-                  ? button(text: "x!", textColor: dullColor)
-                  : Container(),
-              button(text: "7"),
-              button(text: "8"),
-              button(text: "9"),
-              button(text: "x", textColor: operatorColor),
-            ],
+          const SizedBox(
+            height: 20,
           ),
-          Row(
-            children: [
-              openScientific
-                  ? button(text: "1/x", textColor: dullColor)
-                  : Container(),
-              button(text: "4"),
-              button(text: "5"),
-              button(text: "6"),
-              button(text: "-", textColor: operatorColor),
-            ],
-          ),
-          Row(
-            children: [
-              openScientific
-                  ? button(text: "π", textColor: dullColor)
-                  : Container(),
-              button(text: "1"),
-              button(text: "2"),
-              button(text: "3"),
-              button(text: "+", textColor: operatorColor),
-            ],
-          ),
-          Row(
-            children: [
-              button(text: "modechange", textColor: operatorColor),
-              openScientific ? button(text: "e") : Container(),
-              button(text: "0"),
-              button(text: "."),
-              button(text: "=", bgColor: operatorColor),
-            ],
+          Text(
+            output,
+            style: TextStyle(
+              fontSize: outputSize,
+              color: widget.textColor.withOpacity(outputOpacity),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget button({text, textColor = Colors.white, bgColor = buttonColor}) {
+  Widget keyboard() {
+    return Column(
+      children: [
+        //Button Area
+        openScientific
+            ? Row(children: [
+                button(
+                    text: "2nd",
+                    textColor: widget.dullColor,
+                    bgColor: widget.bgColor),
+                isDegree
+                    ? button(
+                        text: "deg",
+                        textColor: widget.dullColor,
+                        bgColor: widget.bgColor)
+                    : button(
+                        text: "rad",
+                        textColor: widget.dullColor,
+                        bgColor: widget.bgColor),
+                isTrigo
+                    ? button(
+                        text: "sin",
+                        textColor: widget.dullColor,
+                        bgColor: widget.bgColor)
+                    : button(
+                        text: "asin",
+                        textColor: widget.dullColor,
+                        bgColor: widget.bgColor),
+                isTrigo
+                    ? button(
+                        text: "cos",
+                        textColor: widget.dullColor,
+                        bgColor: widget.bgColor)
+                    : button(
+                        text: "acos",
+                        textColor: widget.dullColor,
+                        bgColor: widget.bgColor),
+                isTrigo
+                    ? button(
+                        text: "tan",
+                        textColor: widget.dullColor,
+                        bgColor: widget.bgColor)
+                    : button(
+                        text: "atan",
+                        textColor: widget.dullColor,
+                        bgColor: widget.bgColor),
+              ])
+            : Container(),
+        openScientific
+            ? Row(
+                children: [
+                  button(
+                      text: "x^y",
+                      textColor: widget.dullColor,
+                      bgColor: widget.bgColor),
+                  button(
+                      text: "log",
+                      textColor: widget.dullColor,
+                      bgColor: widget.bgColor),
+                  button(
+                      text: "ln",
+                      textColor: widget.dullColor,
+                      bgColor: widget.bgColor),
+                  button(
+                      text: "(",
+                      textColor: widget.dullColor,
+                      bgColor: widget.bgColor),
+                  button(
+                      text: ")",
+                      textColor: widget.dullColor,
+                      bgColor: widget.bgColor),
+                ],
+              )
+            : Container(),
+        Row(
+          children: [
+            openScientific
+                ? button(
+                    text: "√x",
+                    textColor: widget.dullColor,
+                    bgColor: widget.bgColor)
+                : Container(),
+            button(
+                text: "AC",
+                textColor: widget.operatorColor,
+                bgColor: widget.bgColor),
+            button(
+                text: "back",
+                textColor: widget.operatorColor,
+                bgColor: widget.bgColor),
+            button(
+                text: "rem",
+                textColor: widget.operatorColor,
+                bgColor: widget.bgColor),
+            button(
+                text: "÷",
+                textColor: widget.operatorColor,
+                bgColor: widget.bgColor),
+          ],
+        ),
+        Row(
+          children: [
+            openScientific
+                ? button(
+                    text: "x!",
+                    textColor: widget.dullColor,
+                    bgColor: widget.bgColor)
+                : Container(),
+            button(
+                text: "7",
+                textColor: widget.textColor,
+                bgColor: widget.bgColor),
+            button(
+                text: "8",
+                textColor: widget.textColor,
+                bgColor: widget.bgColor),
+            button(
+                text: "9",
+                textColor: widget.textColor,
+                bgColor: widget.bgColor),
+            button(
+                text: "x",
+                textColor: widget.operatorColor,
+                bgColor: widget.bgColor),
+          ],
+        ),
+        Row(
+          children: [
+            openScientific
+                ? button(
+                    text: "1/x",
+                    textColor: widget.dullColor,
+                    bgColor: widget.bgColor)
+                : Container(),
+            button(
+                text: "4",
+                textColor: widget.textColor,
+                bgColor: widget.bgColor),
+            button(
+                text: "5",
+                textColor: widget.textColor,
+                bgColor: widget.bgColor),
+            button(
+                text: "6",
+                textColor: widget.textColor,
+                bgColor: widget.bgColor),
+            button(
+                text: "-",
+                textColor: widget.operatorColor,
+                bgColor: widget.bgColor),
+          ],
+        ),
+        Row(
+          children: [
+            openScientific
+                ? button(
+                    text: "π",
+                    textColor: widget.dullColor,
+                    bgColor: widget.bgColor)
+                : Container(),
+            button(
+                text: "1",
+                textColor: widget.textColor,
+                bgColor: widget.bgColor),
+            button(
+                text: "2",
+                textColor: widget.textColor,
+                bgColor: widget.bgColor),
+            button(
+                text: "3",
+                textColor: widget.textColor,
+                bgColor: widget.bgColor),
+            button(
+                text: "+",
+                textColor: widget.operatorColor,
+                bgColor: widget.bgColor),
+          ],
+        ),
+        Row(
+          children: [
+            button(
+                text: "modechange",
+                textColor: widget.operatorColor,
+                bgColor: widget.bgColor),
+            openScientific
+                ? button(
+                    text: "e",
+                    textColor: widget.textColor,
+                    bgColor: widget.bgColor)
+                : Container(),
+            button(
+                text: "0",
+                textColor: widget.textColor,
+                bgColor: widget.bgColor),
+            button(
+                text: ".",
+                textColor: widget.textColor,
+                bgColor: widget.bgColor),
+            button(
+                text: "=",
+                textColor: widget.bgColor,
+                bgColor: widget.operatorColor),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget button({text, textColor = Colors.white, bgColor}) {
     IconData? iconData;
     switch (text) {
       case '+':
@@ -328,6 +483,7 @@ class _CalculatorAppState extends State<CalculatorApp> {
         margin: EdgeInsets.all(btnMargin),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
+            elevation: 0,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
             padding: EdgeInsets.all(btnPadding),

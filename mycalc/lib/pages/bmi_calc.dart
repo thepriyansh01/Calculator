@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
 
 class BMI extends StatefulWidget {
-  const BMI({super.key});
+  final Color dullColor;
+  final Color operatorColor;
+  final Color textColor;
+  final Color bgColor;
+
+  const BMI({
+    Key? key,
+    required this.textColor,
+    required this.operatorColor,
+    required this.dullColor,
+    required this.bgColor,
+  }) : super(key: key);
 
   @override
   State<BMI> createState() => _BMIState();
@@ -70,8 +81,9 @@ class _BMIState extends State<BMI> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-          child: Container(
+      body: Scaffold(
+          backgroundColor: widget.bgColor,
+          body: Container(
               decoration: const BoxDecoration(
                   // image: DecorationImage(image: AssetImage(assetName)),
                   ),
@@ -83,12 +95,12 @@ class _BMIState extends State<BMI> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Row(children: <Widget>[
-                          const Text(
+                          Text(
                             "BMI",
                             style: TextStyle(
+                              color: widget.textColor,
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
-                              color: Colors.black,
                             ),
                           ),
                           dots(),
@@ -96,11 +108,11 @@ class _BMIState extends State<BMI> {
                           dots(),
                           dots(),
                         ]),
-                        const Text(
+                        Text(
                           "CALCULATOR",
                           style: TextStyle(
                             fontSize: 27,
-                            color: Colors.black,
+                            color: widget.textColor,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -115,15 +127,16 @@ class _BMIState extends State<BMI> {
                       ),
                       Text(
                         bmi.toString(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 120,
-                          color: Colors.black,
+                          color: widget.operatorColor,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
                       Text(
                         status,
-                        style: const TextStyle(
+                        style: TextStyle(
+                          color: widget.dullColor,
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),
@@ -140,7 +153,8 @@ class _BMIState extends State<BMI> {
                                 children: <Widget>[
                                   Text(
                                     age.toString(),
-                                    style: const TextStyle(
+                                    style: TextStyle(
+                                      color: widget.textColor,
                                       fontSize: 35,
                                       fontWeight: FontWeight.w800,
                                     ),
@@ -148,9 +162,10 @@ class _BMIState extends State<BMI> {
                                   const SizedBox(
                                     width: 5,
                                   ),
-                                  const Text(
+                                  Text(
                                     "years",
                                     style: TextStyle(
+                                      color: widget.dullColor,
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -172,7 +187,8 @@ class _BMIState extends State<BMI> {
                                 children: <Widget>[
                                   Text(
                                     height.toString(),
-                                    style: const TextStyle(
+                                    style: TextStyle(
+                                      color: widget.textColor,
                                       fontSize: 35,
                                       fontWeight: FontWeight.w800,
                                     ),
@@ -180,9 +196,10 @@ class _BMIState extends State<BMI> {
                                   const SizedBox(
                                     width: 5,
                                   ),
-                                  const Text(
+                                  Text(
                                     "cm",
                                     style: TextStyle(
+                                      color: widget.dullColor,
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -204,7 +221,8 @@ class _BMIState extends State<BMI> {
                                 children: <Widget>[
                                   Text(
                                     weight.toString(),
-                                    style: const TextStyle(
+                                    style: TextStyle(
+                                      color: widget.textColor,
                                       fontSize: 35,
                                       fontWeight: FontWeight.w800,
                                     ),
@@ -212,9 +230,10 @@ class _BMIState extends State<BMI> {
                                   const SizedBox(
                                     width: 5,
                                   ),
-                                  const Text(
+                                  Text(
                                     "kg",
                                     style: TextStyle(
+                                      color: widget.dullColor,
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -239,11 +258,12 @@ class _BMIState extends State<BMI> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           padding: const EdgeInsets.all(10),
-                          backgroundColor: Colors.blue,
+                          backgroundColor: widget.operatorColor,
                         ),
-                        child: const Text(
+                        child: Text(
                           "Calculate",
                           style: TextStyle(
+                            color: widget.bgColor,
                             fontSize: 26,
                             fontWeight: FontWeight.w400,
                           ),
@@ -263,6 +283,7 @@ class _BMIState extends State<BMI> {
         child: Icon(
           action == "increase" ? Icons.add : Icons.remove,
           size: 50,
+          color: widget.operatorColor,
         ),
       ),
     );
@@ -273,9 +294,9 @@ class _BMIState extends State<BMI> {
       margin: const EdgeInsets.only(left: 2),
       width: 6,
       height: 6,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.black,
+        color: widget.textColor,
       ),
     );
   }

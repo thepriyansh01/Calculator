@@ -1,6 +1,23 @@
 import 'package:flutter/material.dart';
 
-const operatorColor = Color.fromARGB(255, 172, 157, 26);
-const textColor = Colors.white;
-const buttonColor = Colors.black;
-const dullColor = Color.fromRGBO(255, 255, 255, 0.5);
+bool isDarkTheme = true;
+
+Color getOperatorColor() {
+  return isDarkTheme
+      ? const Color.fromARGB(255, 203, 235, 24)
+      : const Color.fromRGBO(139, 195, 74, 1);
+}
+
+Color getTextColor() {
+  return isDarkTheme ? Colors.white : Colors.black;
+}
+
+Color getBgColor() {
+  return isDarkTheme ? Colors.black : Colors.white;
+}
+
+Color getDullColor() {
+  return isDarkTheme
+      ? const Color.fromRGBO(255, 255, 255, 0.6)
+      : const Color.fromRGBO(0, 0, 0, 0.6);
+}
